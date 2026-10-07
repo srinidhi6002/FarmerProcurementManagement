@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriProcure | Farmer Procurement & Mandi Management System</title>
+    <meta name="description" content="State-of-the-art Farmer Procurement, Quality Grading, Weighbridge & DBT Payment Management System.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- CSS Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>AgriProcure</h2>
+                    <span>Mandi Management v2.4</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="farmers">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>Farmer Directory</span>
+                </button>
+                <button class="nav-item" data-tab="procurement">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span>Crop Intake Entry</span>
+                </button>
+                <button class="nav-item" data-tab="weighbridge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>Weighbridge & Slips</span>
+                </button>
+                <button class="nav-item" data-tab="payments">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    <span>DBT Payouts</span>
+                </button>
+                <button class="nav-item" data-tab="msp">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <span>MSP Rates</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="mandi-location">
+                    <span class="pulse-dot"></span>
+                    <div>
+                        <strong>Central Mandi Hub</strong>
+                        <small>Procurement Center #104</small>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="global-search" placeholder="Search by Farmer Name, Token #, Aadhaar, Crop...">
+                </div>
+
+                <div class="header-actions">
+                    <div class="msp-ticker-pill">
+                        <span class="ticker-label">LIVE MSP</span>
+                        <span class="ticker-value">Paddy: ₹2,183/Qtl | Wheat: ₹2,275/Qtl</span>
+                    </div>
+                    <button class="btn btn-primary" id="btn-quick-intake">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>New Procurement</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <section id="view-dashboard" class="tab-view active">
+                <div class="view-header">
+                    <div>
+                        <h1>Procurement Overview</h1>
+                        <p>Real-time statistics & procurement metrics for current season</p>
+                    </div>
+                    <div class="date-filter">
+                        <span class="badge badge-success">Season 2026-Kharif</span>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card gradient-emerald">
+                        <div class="stat-icon">🌾</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Procurement</span>
+                            <h2 id="stat-total-volume">4,850.50 Qtl</h2>
+                            <small class="trend positive">↑ 12% vs last week</small>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-cyan">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Disbursed Payout</span>
+                            <h2 id="stat-total-payout">₹ 1,05,86,340</h2>
+                            <small class="trend positive">Direct Bank Transfer</small>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-amber">
+                        <div class="stat-icon">👨‍🌾</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Enrolled Farmers</span>
+                            <h2 id="stat-farmer-count">142</h2>
+                            <small class="trend neutral">Verified Records</small>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-purple">
+                        <div class="stat-icon">⚖️</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Pending Payout Clearance</span>
+                            <h2 id="stat-pending-payout">₹ 8,45,200</h2>
+                            <small class="trend warning">14 Vouchers Pending</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content Layout -->
+                <div class="dashboard-grid">
+                    <!-- Recent Intake Table -->
+                    <div class="panel table-panel">
+                        <div class="panel-header">
+                            <h3>Recent Procurement Entries</h3>
+                            <button class="btn btn-sm btn-secondary" onclick="app.switchTab('procurement')">View All</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Token ID</th>
+                                        <th>Farmer Name</th>
+                                        <th>Crop Type</th>
+                                        <th>Net Qty (Qtl)</th>
+                                        <th>Quality Grade</th>
+                                        <th>Total Payout</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-intake-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Crop Breakdown Panel -->
+                    <div class="panel analytics-panel">
+                        <div class="panel-header">
+                            <h3>Crop Tonnage Share</h3>
+                        </div>
+                        <div class="crop-share-list" id="crop-share-container">
+                            <!-- Dynamic crop progress bars -->
+                        </div>
+
+                        <div class="mandi-announcement">
+                            <h4>📢 Procurement Guidelines</h4>
+                            <ul>
+                                <li>Max allowed moisture for Grade A Paddy: 14%</li>
+                                <li>FSSAI certified grain inspection mandatory</li>
+                                <li>Payment SLA: Within 48 Hours of Receipt</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Farmers View -->
+            <section id="view-farmers" class="tab-view">
+                <div class="view-header">
+                    <div>
+                        <h1>Farmer Directory</h1>
+                        <p>Manage farmer profiles, land verification, and bank details for DBT</p>
+                    </div>
+                    <button class="btn btn-primary" id="btn-add-farmer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>Register New Farmer</span>
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header search-bar-panel">
+                        <input type="text" id="farmer-search-input" class="form-control" placeholder="Search by name, Aadhaar, mobile or village...">
+                        <select id="farmer-village-filter" class="form-control filter-select">
+                            <option value="">All Villages</option>
+                            <option value="Rampur">Rampur</option>
+                            <option value="Sonpur">Sonpur</option>
+                            <option value="Krishnapur">Krishnapur</option>
+                            <option value="Devpur">Devpur</option>
+                        </select>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Farmer ID</th>
+                                    <th>Farmer Name</th>
+                                    <th>Contact / Village</th>
+                                    <th>Aadhaar / ID</th>
+                                    <th>Land Holding</th>
+                                    <th>Bank Account</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="farmers-tbody">
+                                <!-- Dynamic farmers -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Procurement Intake View -->
+            <section id="view-procurement" class="tab-view">
+                <div class="view-header">
+                    <div>
+                        <h1>Crop Intake & Quality Records</h1>
+                        <p>Log grain intake batches, moisture checks, and automated pricing</p>
+                    </div>
+                    <button class="btn btn-primary" id="btn-new-intake-modal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>Add Procurement Intake</span>
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Token ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Farmer</th>
+                                    <th>Crop & Grade</th>
+                                    <th>Moisture / Foreign Matter</th>
+                                    <th>Net Weight</th>
+                                    <th>Calculated Payout</th>
+                                    <th>Payment Status</th>
+                                    <th>Voucher</th>
+                                </tr>
+                            </thead>
+                            <tbody id="procurement-tbody">
+                                <!-- Dynamic intake records -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Weighbridge View -->
+            <section id="view-weighbridge" class="tab-view">
+                <div class="view-header">
+                    <div>
+                        <h1>Weighbridge & Gross/Tare Slips</h1>
+                        <p>Simulate weighbridge sensor readings for loaded truck gross & empty tare weight</p>
+                    </div>
+                </div>
+
+                <div class="weighbridge-container">
+                    <!-- Simulator Form -->
+                    <div class="panel weighbridge-card">
+                        <h3>⚖️ Digital Weighbridge Terminal</h3>
+                        <form id="weighbridge-form">
+                            <div class="form-group">
+                                <label>Select Token / Vehicle Entry</label>
+                                <select id="wb-token-select" class="form-control" required>
+                                    <!-- Dynamic tokens -->
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Gross Weight (Kg)</label>
+                                    <input type="number" id="wb-gross-weight" class="form-control" placeholder="e.g., 14500" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tare Weight (Kg)</label>
+                                    <input type="number" id="wb-tare-weight" class="form-control" placeholder="e.g., 4200" required>
+                                </div>
+                            </div>
+                            <div class="weighbridge-reading-box">
+                                <span>Calculated Net Weight:</span>
+                                <h2 id="wb-calculated-net">0.00 Quintals</h2>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-block">Save Weighbridge Slip</button>
+                        </form>
+                    </div>
+
+                    <!-- Recent Weighbridge Slips -->
+                    <div class="panel weighbridge-history">
+                        <h3>Recent Weighbridge Records</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Token</th>
+                                        <th>Vehicle No</th>
+                                        <th>Gross (kg)</th>
+                                        <th>Tare (kg)</th>
+                                        <th>Net (Qtl)</th>
+                                        <th>Slip</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weighbridge-tbody">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Payments View -->
+            <section id="view-payments" class="tab-view">
+                <div class="view-header">
+                    <div>
+                        <h1>Direct Benefit Transfer (DBT) Payouts</h1>
+                        <p>Approve and process direct bank transfers to verified farmer accounts</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Txn ID</th>
+                                    <th>Farmer Name</th>
+                                    <th>Bank & Account No</th>
+                                    <th>IFSC Code</th>
+                                    <th>Amount</th>
+                                    <th>Approval Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payments-tbody">
+                                <!-- Dynamic Payments -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MSP Rates View -->
+            <section id="view-msp" class="tab-view">
+                <div class="view-header">
+                    <div>
+                        <h1>Minimum Support Price (MSP) Schedule</h1>
+                        <p>Government notified support prices & quality specs per Quintal (100 Kg)</p>
+                    </div>
+                </div>
+
+                <div class="msp-cards-grid" id="msp-cards-container">
+                    <!-- Dynamic MSP Cards -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Farmer Registration Modal -->
+    <div class="modal-backdrop" id="modal-farmer">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Register New Farmer</h2>
+                <button class="modal-close" onclick="app.closeModals()">&times;</button>
+            </div>
+            <form id="form-register-farmer">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="f-name" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Number *</label>
+                            <input type="tel" id="f-phone" class="form-control" placeholder="10 digit mobile" required pattern="[0-9]{10}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Aadhaar Number *</label>
+                            <input type="text" id="f-aadhaar" class="form-control" placeholder="XXXX-XXXX-XXXX" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Village / District *</label>
+                            <input type="text" id="f-village" class="form-control" placeholder="e.g. Rampur" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Land Holding (Acres)</label>
+                            <input type="number" step="0.1" id="f-land" class="form-control" placeholder="e.g. 4.5">
+                        </div>
+                        <div class="form-group">
+                            <label>Bank Name</label>
+                            <input type="text" id="f-bank-name" class="form-control" placeholder="State Bank of India" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Account Number *</label>
+                            <input type="text" id="f-bank-acc" class="form-control" placeholder="e.g. 30894726194" required>
+                        </div>
+                        <div class="form-group">
+                            <label>IFSC Code *</label>
+                            <input type="text" id="f-ifsc" class="form-control" placeholder="e.g. SBIN0001234" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModals()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Farmer Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Procurement Intake Modal -->
+    <div class="modal-backdrop" id="modal-intake">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Crop Procurement Record</h2>
+                <button class="modal-close" onclick="app.closeModals()">&times;</button>
+            </div>
+            <form id="form-new-intake">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Select Farmer *</label>
+                        <select id="in-farmer-id" class="form-control" required>
+                            <!-- Dynamic Farmers -->
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Crop Variety *</label>
+                            <select id="in-crop-type" class="form-control" required>
+                                <option value="Paddy (Common)">Paddy (Common) - ₹2,183/Qtl</option>
+                                <option value="Paddy (Grade A)">Paddy (Grade A) - ₹2,203/Qtl</option>
+                                <option value="Wheat">Wheat - ₹2,275/Qtl</option>
+                                <option value="Maize">Maize - ₹2,090/Qtl</option>
+                                <option value="Mustard">Mustard - ₹5,650/Qtl</option>
+                                <option value="Cotton">Cotton - ₹6,620/Qtl</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Vehicle Number</label>
+                            <input type="text" id="in-vehicle" class="form-control" placeholder="e.g. UP 32 AB 1234">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantity Intake (Quintals) *</label>
+                            <input type="number" step="0.01" id="in-quantity" class="form-control" placeholder="e.g. 45.50" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Moisture Percentage (%)</label>
+                            <input type="number" step="0.1" id="in-moisture" class="form-control" value="13.5" placeholder="e.g. 13.5">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Foreign Matter / Impurity (%)</label>
+                            <input type="number" step="0.1" id="in-impurity" class="form-control" value="1.0" placeholder="e.g. 1.0">
+                        </div>
+                        <div class="form-group">
+                            <label>Assigned Quality Grade</label>
+                            <select id="in-grade" class="form-control">
+                                <option value="Grade A">Grade A (Full MSP)</option>
+                                <option value="Grade B">Grade B (1.5% Deduction)</option>
+                                <option value="Below Spec">Below Spec (3% Deduction)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="payout-preview-box">
+                        <span>Estimated Gross Payout:</span>
+                        <strong id="in-payout-preview">₹ 0.00</strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModals()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Issue Procurement Token & Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Printable Receipt Voucher Modal -->
+    <div class="modal-backdrop" id="modal-voucher">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Procurement Voucher / Receipt</h2>
+                <button class="modal-close" onclick="app.closeModals()">&times;</button>
+            </div>
+            <div class="modal-body" id="voucher-print-area">
+                <!-- Dynamic Voucher Layout -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="app.closeModals()">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print Voucher Slip</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-container"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
