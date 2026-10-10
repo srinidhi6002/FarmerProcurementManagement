@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+let db;
+try { db = require('./db'); } catch (e) { db = require('../db'); }
 
 // GET Executive Dashboard Statistics
 router.get('/dashboard-stats', async (req, res) => {
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const farmersCountRes = await db.query('SELECT COUNT(*) FROM farmers');
             const totalProcurementRes = await db.query('SELECT COALESCE(SUM(net_weight_qtl), 0) AS total_qtl FROM procurement_inspections');
             const totalPayoutsRes = await db.query('SELECT COALESCE(SUM(total_amount), 0) AS total_amount FROM payouts WHERE payment_status = \'Disbursed\'');
@@ -42,7 +43,7 @@ router.get('/dashboard-stats', async (req, res) => {
 // GET Crop MSP Rates
 router.get('/msp', async (req, res) => {
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const result = await db.query('SELECT * FROM crop_msp ORDER BY id ASC');
             return res.json({ success: true, rates: result.rows });
         }
@@ -57,7 +58,7 @@ router.put('/msp/:id', async (req, res) => {
     const { mspPerQtl, maxMoisturePct } = req.body;
 
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const result = await db.query(
                 'UPDATE crop_msp SET msp_per_qtl = $1, max_moisture_pct = $2 WHERE id = $3 RETURNING *',
                 [mspPerQtl, maxMoisturePct, id]
