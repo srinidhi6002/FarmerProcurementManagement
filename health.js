@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+let db;
+try { db = require('./db'); } catch (e) { db = require('../db'); }
 
 // Health & DB Connection Check
 router.get('/', async (req, res) => {
     let dbStatus = 'Not Configured';
     let dbTime = null;
 
-    if (db.pool) {
+    if (db && db.pool) {
         try {
             const result = await db.query('SELECT NOW() as now_time');
             dbStatus = 'Connected to Neon PostgreSQL';
