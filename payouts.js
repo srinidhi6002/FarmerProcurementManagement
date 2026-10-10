@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+let db;
+try { db = require('./db'); } catch (e) { db = require('../db'); }
 
 // GET all payouts
 router.get('/', async (req, res) => {
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const queryText = `
                 SELECT 
                     p.id,
@@ -42,7 +43,7 @@ router.put('/:id/disburse', async (req, res) => {
     const { id } = req.params;
 
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const updateRes = await db.query(
                 `UPDATE payouts 
                  SET payment_status = 'Disbursed', updated_at = CURRENT_TIMESTAMP 
@@ -56,10 +57,8 @@ router.put('/:id/disburse', async (req, res) => {
 
             const payout = updateRes.rows[0];
 
-            // Update slot booking status to completed
             await db.query('UPDATE slot_bookings SET status = \'Completed\' WHERE id = $1', [payout.booking_id]);
 
-            // Notify farmer
             await db.query(
                 `INSERT INTO notifications (farmer_id, booking_id, type, message)
                  VALUES ($1, $2, 'Payment_Disbursed', $3)`,
