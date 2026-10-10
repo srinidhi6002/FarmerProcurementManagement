@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+let db;
+try { db = require('./db'); } catch (e) { db = require('../db'); }
 
 // GET all farmers
 router.get('/', async (req, res) => {
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const result = await db.query('SELECT * FROM farmers ORDER BY id DESC');
             return res.json({ success: true, count: result.rows.length, farmers: result.rows });
         } else {
@@ -19,7 +20,7 @@ router.get('/', async (req, res) => {
 // GET farmer by ID or Code
 router.get('/:id', async (req, res) => {
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const { id } = req.params;
             const result = await db.query('SELECT * FROM farmers WHERE id = $1 OR farmer_code = $2', [isNaN(id) ? -1 : parseInt(id), id]);
             if (result.rows.length === 0) {
@@ -43,7 +44,7 @@ router.post('/', async (req, res) => {
     const farmerCode = `F-${Math.floor(1000 + Math.random() * 9000)}`;
 
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const result = await db.query(
                 `INSERT INTO farmers (farmer_code, name, phone, aadhaar, village, land_acres, bank_name, bank_acc, ifsc, status)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'Verified') RETURNING *`,
