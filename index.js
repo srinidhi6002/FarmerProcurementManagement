@@ -1,10 +1,12 @@
 /**
  * Smart Farmer Procurement System - Express API Server
- * Designed for Deployment on Render connected to Neon Cloud PostgreSQL
+ * Flexible configuration supporting root or subfolder route resolution for Render deployment.
  */
 
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -20,15 +22,29 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Import API Routes
-const healthRoute = require('./routes/health');
-const authRoute = require('./routes/auth');
-const farmersRoute = require('./routes/farmers');
-const centersRoute = require('./routes/centers');
-const queueRoute = require('./routes/queue');
-const verificationRoute = require('./routes/verification');
-const payoutsRoute = require('./routes/payouts');
-const adminRoute = require('./routes/admin');
+// Helper function to resolve routes regardless of flat or nested folder structure
+const loadRoute = (routeName) => {
+    const nestedPath = path.join(__dirname, 'routes', `${routeName}.js`);
+    if (fs.existsSync(nestedPath)) {
+        return require(`./routes/${routeName}`);
+    }
+    const flatPath = path.join(__dirname, `${routeName}.js`);
+    if (fs.existsSync(flatPath)) {
+        return require(`./${routeName}`);
+    }
+    console.warn(`⚠️ Warning: Route module ${routeName} not found.`);
+    return (req, res) => res.status(404).json({ success: false, message: `Route ${routeName} unavailable` });
+};
+
+// Import Routes
+const healthRoute = loadRoute('health');
+const authRoute = loadRoute('auth');
+const farmersRoute = loadRoute('farmers');
+const centersRoute = loadRoute('centers');
+const queueRoute = loadRoute('queue');
+const verificationRoute = loadRoute('verification');
+const payoutsRoute = loadRoute('payouts');
+const adminRoute = loadRoute('admin');
 
 // Mount Routes
 app.use('/api/health', healthRoute);
