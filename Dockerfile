@@ -1,18 +1,17 @@
-# Dockerfile for Render Docker Environment
+# Dockerfile for Render Deployment
 FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package manifests and install dependencies
-COPY package*.json ./
-RUN npm install --production
-
-# Copy application source code
+# Copy all application files
 COPY . .
 
-# Expose backend port
+# Install dependencies
+RUN npm install
+
+# Expose port
 EXPOSE 5000
 
-# Start Express server
-CMD ["npm", "start"]
+# Start Express API server
+CMD ["node", "index.js"]
