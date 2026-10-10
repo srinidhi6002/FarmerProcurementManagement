@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+let db;
+try { db = require('./db'); } catch (e) { db = require('../db'); }
 
 // Register / Login Farmer or Admin
 router.post('/login', async (req, res) => {
@@ -11,12 +12,11 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             let userRes = await db.query('SELECT * FROM users WHERE phone = $1', [phone]);
             let user;
 
             if (userRes.rows.length === 0) {
-                // Auto register for seamless college project demo
                 const newRole = role || 'farmer';
                 const name = newRole === 'admin' ? 'Mandi Admin' : `Farmer (${phone.slice(-4)})`;
                 const insertRes = await db.query(
@@ -26,7 +26,6 @@ router.post('/login', async (req, res) => {
                 user = insertRes.rows[0];
 
                 if (newRole === 'farmer') {
-                    // Create farmer record
                     const farmerCode = `F-${Math.floor(1000 + Math.random() * 9000)}`;
                     await db.query(
                         'INSERT INTO farmers (user_id, farmer_code, name, phone, aadhaar, village, bank_name, bank_acc, ifsc) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
@@ -43,7 +42,6 @@ router.post('/login', async (req, res) => {
                 user
             });
         } else {
-            // Mock fallback if DB pool is absent
             return res.json({
                 success: true,
                 message: 'Logged in (Local Mode)',
