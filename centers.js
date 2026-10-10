@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+let db;
+try { db = require('./db'); } catch (e) { db = require('../db'); }
 
 // GET all Procurement Centers (Mandis)
 router.get('/', async (req, res) => {
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const result = await db.query('SELECT * FROM procurement_centers WHERE status = \'Active\' ORDER BY id ASC');
             return res.json({ success: true, centers: result.rows });
         }
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
 router.get('/:centerId/slots', async (req, res) => {
     const { centerId } = req.params;
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const result = await db.query(
                 'SELECT * FROM center_slots WHERE center_id = $1 ORDER BY slot_date ASC, time_window ASC',
                 [centerId]
@@ -41,8 +42,7 @@ router.post('/book-slot', async (req, res) => {
     const bookingToken = `TKN-${Math.floor(8000 + Math.random() * 1000)}`;
 
     try {
-        if (db.pool) {
-            // Check slot capacity
+        if (db && db.pool) {
             if (slotId) {
                 const slotCheck = await db.query('SELECT * FROM center_slots WHERE id = $1', [slotId]);
                 if (slotCheck.rows.length > 0) {
@@ -54,7 +54,6 @@ router.post('/book-slot', async (req, res) => {
                             message: 'Selected slot capacity exceeded. Please select another slot.'
                         });
                     }
-                    // Update booked quantity
                     await db.query(
                         'UPDATE center_slots SET booked_qtl = booked_qtl + $1 WHERE id = $2',
                         [estimatedQtl, slotId]
@@ -62,7 +61,6 @@ router.post('/book-slot', async (req, res) => {
                 }
             }
 
-            // Insert booking
             const bookingRes = await db.query(
                 `INSERT INTO slot_bookings (booking_token, farmer_id, center_id, slot_id, crop_name, estimated_qtl, vehicle_no, queue_number, status)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, (SELECT COALESCE(MAX(queue_number), 0) + 1 FROM slot_bookings WHERE booking_date = CURRENT_DATE), 'Booked')
@@ -72,7 +70,6 @@ router.post('/book-slot', async (req, res) => {
 
             const newBooking = bookingRes.rows[0];
 
-            // Create system notification
             await db.query(
                 `INSERT INTO notifications (farmer_id, booking_id, type, message)
                  VALUES ($1, $2, 'Slot_Booked', $3)`,
