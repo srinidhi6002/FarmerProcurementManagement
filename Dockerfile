@@ -1,17 +1,17 @@
-# Dockerfile for Render Deployment
+# Bulletproof Dockerfile for Node.js Express API
 FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy all application files
+# Copy application files
 COPY . .
 
-# Install dependencies
-RUN npm install
+# Install exact backend dependencies directly
+RUN npm install express cors dotenv pg --no-audit --no-fund
 
-# Expose port
+# Expose server port
 EXPOSE 5000
 
-# Start Express API server
+# Start server
 CMD ["node", "index.js"]
