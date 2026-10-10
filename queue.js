@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+let db;
+try { db = require('./db'); } catch (e) { db = require('../db'); }
 
 // GET Live Queue List
 router.get('/', async (req, res) => {
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const queryText = `
                 SELECT 
                     b.id,
@@ -36,13 +37,13 @@ router.get('/', async (req, res) => {
     }
 });
 
-// PUT Update Queue Status (e.g. 'Arrived', 'Inspected', 'Completed')
+// PUT Update Queue Status
 router.put('/:id/status', async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
     try {
-        if (db.pool) {
+        if (db && db.pool) {
             const updateRes = await db.query(
                 'UPDATE slot_bookings SET status = $1 WHERE id = $2 RETURNING *',
                 [status, id]
@@ -54,7 +55,6 @@ router.put('/:id/status', async (req, res) => {
 
             const booking = updateRes.rows[0];
 
-            // Send system notification
             await db.query(
                 'INSERT INTO notifications (farmer_id, booking_id, type, message) VALUES ($1, $2, $3, $4)',
                 [booking.farmer_id, booking.id, 'Queue_Update', `Queue status updated to '${status}' for Token ${booking.booking_token}.`]
