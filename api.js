@@ -5,32 +5,64 @@
 
 class AgriProcureAPI {
     constructor() {
-        // Auto-detect production vs local backend server URL
         const hostname = window.location.hostname;
         if (window.ENV_API_URL) {
             this.baseUrl = window.ENV_API_URL;
         } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
             this.baseUrl = 'http://localhost:5000/api';
         } else {
-            // Default Render Production Backend URL (or relative proxy)
-            this.baseUrl = 'https://agriprocure-backend-api.onrender.com/api';
+            // Live Render Production Backend URL
+            this.baseUrl = 'https://farmerprocurementmanagement.onrender.com/api';
         }
 
         this.isOnline = true;
         this.checkConnection();
     }
 
-    async checkConnection() {
+    async checkConnection(attempt = 1) {
+        const dbBadge = document.getElementById('db-status-pill');
+        if (dbBadge && attempt === 1) {
+            dbBadge.innerHTML = `<span class="pulse-dot-amber"></span> Checking Neon DB...`;
+        }
+
         try {
-            const response = await fetch(`${this.baseUrl}/health`, { signal: AbortSignal.timeout(3000) });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const response = await fetch(`${this.baseUrl}/health`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
             const data = await response.json();
             if (data.status === 'Online') {
                 this.isOnline = true;
                 console.log('✅ Backend API Connected:', this.baseUrl, data);
+                if (dbBadge) {
+                    if (data.database && data.database.status && data.database.status.includes('Connected')) {
+                        dbBadge.innerHTML = `<span class="pulse-dot-green"></span> ⚡ Neon Cloud DB: Connected`;
+                        dbBadge.className = 'status-pill connected';
+                        dbBadge.title = 'Connected to Neon PostgreSQL cloud database';
+                    } else {
+                        dbBadge.innerHTML = `<span class="pulse-dot-amber"></span> ⚙️ Render Live | DB: Not Configured`;
+                        dbBadge.className = 'status-pill fallback';
+                        dbBadge.title = 'Render is live! Add DATABASE_URL to Render Dashboard -> Environment to link Neon DB.';
+                    }
+                }
+                return data;
             }
         } catch (err) {
             this.isOnline = false;
-            console.warn('⚠️ Backend API disconnected. Operating in local storage mode:', err.message);
+            console.warn(`⚠️ Backend API connection attempt ${attempt} failed:`, err.message);
+            if (dbBadge) {
+                if (attempt < 4) {
+                    dbBadge.innerHTML = `<span class="pulse-dot-amber"></span> ⏳ Waking Render (${attempt}/3)...`;
+                    dbBadge.className = 'status-pill fallback';
+                    // Render free tier spins down after inactivity and needs 30-50s to wake up
+                    setTimeout(() => this.checkConnection(attempt + 1), 6000);
+                } else {
+                    dbBadge.innerHTML = `<span class="pulse-dot-amber"></span> 📁 Local Demo Mode`;
+                    dbBadge.className = 'status-pill fallback';
+                    dbBadge.title = 'Operating in browser offline fallback mode with demo data';
+                }
+            }
         }
     }
 
