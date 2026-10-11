@@ -56,8 +56,25 @@ app.use('/api/verification', verificationRoute);
 app.use('/api/payouts', payoutsRoute);
 app.use('/api/admin', adminRoute);
 
-// Root Welcome Endpoint
+// Serve static frontend assets (HTML, CSS, JS)
+app.use(express.static(__dirname));
+
+// Root route: Serve Frontend UI index.html
 app.get('/', (req, res) => {
+    const indexPath = path.join(__dirname, 'index.html');
+    if (fs.existsSync(indexPath)) {
+        return res.sendFile(indexPath);
+    }
+    res.json({
+        service: 'Smart Farmer Procurement System REST API',
+        status: 'Online',
+        documentation: '/api/health',
+        render_deployment: 'Ready'
+    });
+});
+
+// Explicit API Welcome Endpoint
+app.get('/api', (req, res) => {
     res.json({
         service: 'Smart Farmer Procurement System REST API',
         status: 'Online',
