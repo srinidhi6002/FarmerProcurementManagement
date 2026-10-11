@@ -82,12 +82,19 @@ class AgriProcureApp {
             // Check health & DB status
             const health = await this.api.getHealth().catch(() => null);
             const dbBadge = document.getElementById('db-status-pill');
-            if (dbBadge && health && health.database.status.includes('Connected')) {
-                dbBadge.innerHTML = `<span class="pulse-dot-green"></span> Neon Cloud DB: Connected`;
-                dbBadge.className = 'status-pill connected';
-            } else if (dbBadge) {
-                dbBadge.innerHTML = `<span class="pulse-dot-amber"></span> Backend DB: Local Fallback`;
-                dbBadge.className = 'status-pill fallback';
+            if (dbBadge) {
+                if (health && health.database && health.database.status && health.database.status.includes('Connected')) {
+                    dbBadge.innerHTML = `<span class="pulse-dot-green"></span> ⚡ Neon Cloud DB: Connected`;
+                    dbBadge.className = 'status-pill connected';
+                    dbBadge.title = 'Connected to Neon PostgreSQL cloud database';
+                } else if (health && health.status === 'Online') {
+                    dbBadge.innerHTML = `<span class="pulse-dot-amber"></span> ⚙️ Render Live | DB Not Configured`;
+                    dbBadge.className = 'status-pill fallback';
+                    dbBadge.title = 'Render backend is online! Please add DATABASE_URL in Render Dashboard -> Environment';
+                } else {
+                    dbBadge.innerHTML = `<span class="pulse-dot-amber"></span> 📁 Local Demo Mode`;
+                    dbBadge.className = 'status-pill fallback';
+                }
             }
 
             // Fetch Stats
@@ -139,7 +146,6 @@ class AgriProcureApp {
     }
 
     populateDropdowns() {
-        // Farmers dropdown
         const farmerSelect = document.getElementById('in-farmer-id');
         const slotFarmerSelect = document.getElementById('slot-farmer-id');
         if (farmerSelect && this.farmers.length > 0) {
@@ -149,13 +155,11 @@ class AgriProcureApp {
             slotFarmerSelect.innerHTML = this.farmers.map(f => `<option value="${f.id}">${f.name} (${f.village} - ${f.farmer_code || f.id})</option>`).join('');
         }
 
-        // Centers dropdown for slot booking
         const centerSelect = document.getElementById('slot-center-id');
         if (centerSelect && this.centers.length > 0) {
             centerSelect.innerHTML = this.centers.map(c => `<option value="${c.id}">${c.name} (${c.district})</option>`).join('');
         }
 
-        // Weighbridge Token dropdown
         const wbTokenSelect = document.getElementById('wb-token-select');
         if (wbTokenSelect) {
             wbTokenSelect.innerHTML = this.intakeRecords.map(rec => `<option value="${rec.id || rec.token}">${rec.token || rec.booking_token} - ${rec.farmerName || rec.farmer_name} (${rec.crop || rec.crop_name})</option>`).join('');
@@ -186,7 +190,6 @@ class AgriProcureApp {
         if (elem) elem.textContent = `${netQtl} Quintals`;
     }
 
-    // Handlers
     async handleRegisterFarmer(e) {
         e.preventDefault();
         const farmerData = {
@@ -294,7 +297,6 @@ class AgriProcureApp {
         }
     }
 
-    // Render Methods
     renderAll() {
         this.renderStats();
         this.renderFarmers();
@@ -445,7 +447,6 @@ class AgriProcureApp {
     }
 }
 
-// Global App Instance
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new AgriProcureApp();
 });
